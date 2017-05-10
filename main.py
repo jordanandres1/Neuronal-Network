@@ -1,4 +1,3 @@
-import idx2numpy
 import numpy as np
 from scipy.optimize import fmin # funcion de optimizacion
 from nnFuncionCosto import nnFuncionCosto
@@ -7,10 +6,13 @@ from scipy.stats import logistic # funcion sigmoide gradiente ej: logistic.pdf(n
 from mnist import MNIST
 import random
 
-# Este metodo carga las 10000 imagenes
-def leerArchivo():
-	matrices = idx2numpy.convert_from_file('t10k-images.idx3-ubyte') # Las imagenes son 10000 cada una de 28x28
-	return matrices
+
+def leerTrainingSet(mndata):
+	images, labels = mndata.load_training()
+	x_training = np.array(images)
+	y_training = np.array(labels)
+	return (x_training, y_training)
+
 
 def main():
 	input_layer_size  = 784
@@ -18,29 +20,23 @@ def main():
 	num_labels = 10
 
 	print 'Cargando y visualizando datos\n'
-	#training_set = leerArchivo()
-	#m = len(training_set)
-
-	#print '\nFeedforward usando Redes Neuronales...\n'
-	#lambdaP = 0
-	#nn_params = np.array([[0], [0]])
-	#X  = training_set
-	#J = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambdaP);
-
-
-	
-
 	mndata = MNIST('datos')
+	(x_training, y_training) = leerTrainingSet(mndata)
 
-	images, labels = mndata.load_testing()
-
-	index = random.randrange(0, len(images))  # choose an index ;-)
-	
-	print mndata.display(images[0])
+	print mndata.display(x_training[0])
 	print
-	print len(images)
-	print len(images[0])
-	print labels[0]
+	print mndata.display(x_training[1])
+	print
+	print mndata.display(x_training[2])
+	print
+	print mndata.display(x_training[3])
+	print
+	print mndata.display(x_training[4])
+
+	print '\nFeedforward usando Redes Neuronales...\n'
+	lambdaP = 0
+	nn_params = np.array([[0], [0]])
+	J = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP);
 
 main()
 
