@@ -3,6 +3,9 @@
 -----------------------------------------
 
 # Integrantes:
-## Jordan Villalobos Campos
-## Jason Castillo Condega
-## Pamela Sanchez Muñoz
+
+Jordan Villalobos Campos
+
+Jason Castillo Condega
+
+Pamela Sanchez Muñoz
