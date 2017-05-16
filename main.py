@@ -5,6 +5,7 @@ from scipy import optimize
 from nnFuncionCosto import nnFuncionCosto
 import random
 import warnings
+from Tkinter import *
 # from mnist import MNIST
 
 # Este metodo carga las 60000 imagenes
@@ -24,7 +25,56 @@ def printMatrix(matrix):
 		print
 	print
 
-def main():
+def solicitarNeuronas():
+	top = Toplevel(root)
+	Label(top, text="Neuronas por capa", font="Helvetica 14 bold").grid(row=0, column=0)
+
+	for i in range(int(capas.get())):
+		Label(top, text="Capa " + str(i+1)).grid(row=(i+1), column=0)
+		c = Entry(top)
+		c.grid(row=(i+1), column=1)
+		listaCapas.append(c)
+
+	Button(top, text="Listo", command=imprimir).grid(column=1, sticky=E, pady=4)
+
+def imprimir():
+	global listaCapas
+
+	for c in listaCapas:
+		print c.get()
+
+	listaCapas = []
+
+if __name__ == '__main__':
+
+	'''
+	root = Tk()
+	root.title("Red neuronal")
+
+	listaCapas = []
+
+	Label(root, text="Proporciones", font="Helvetica 14 bold").grid(row=0, column=0)
+	Label(root, text="Validation").grid(row=1, column=0)
+	Label(root, text="Test").grid(row=2, column=0)
+
+	validation = Entry(root)
+	test = Entry(root)
+	validation.grid(row=1, column=1)
+	test.grid(row=2, column=1)
+
+	Label(root, text="Arquitectura", font="Helvetica 14 bold").grid(row=3, column=0)
+	Label(root, text="Capas ocultas").grid(row=4, column=0)
+
+	capas = Entry(root)
+	capas.grid(row=4, column=1)
+
+	Button(root, text="Listo", command=solicitarNeuronas).grid(row=5, column=1, sticky=E, pady=4)
+	
+	mainloop()
+	'''
+
+
+	
 	input_layer_size  = 784
 	hidden_layer_size = 25
 	num_labels = 10
@@ -52,11 +102,4 @@ def main():
 
 	print '\nEntrenando la Red Neuronal...'
 	#res1 = optimize.fmin_cg(nnFuncionCosto, )
-
-
-
-
-
-main()
-
-
+	
