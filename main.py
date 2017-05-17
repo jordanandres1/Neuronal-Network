@@ -1,12 +1,11 @@
 import sys
 import numpy as np
 import idx2numpy
-from scipy import optimize
 from nnFuncionCosto import nnFuncionCosto
-import random
+from randInitializeWeights import randInitializeWeights
+from predecir import predecir
 import warnings
 from Tkinter import *
-# from mnist import MNIST
 
 # Este metodo carga las 60000 imagenes
 def leerTrainingSet():
@@ -72,8 +71,6 @@ if __name__ == '__main__':
 	
 	mainloop()
 	'''
-
-
 	
 	input_layer_size  = 784
 	hidden_layer_size = 25
@@ -86,20 +83,23 @@ if __name__ == '__main__':
 	(x_training, y_training) = leerTrainingSet()
 
 	print '\nFeedforward usando Redes Neuronales...'
-	theta1 = np.random.uniform(-1, 1, (hidden_layer_size, input_layer_size + 1))	
-	theta2 = np.random.uniform(-1, 1, (num_labels, hidden_layer_size + 1))
+	theta1 = randInitializeWeights(hidden_layer_size, input_layer_size) # 25 x 785
+	theta2 = randInitializeWeights(num_labels, hidden_layer_size) # 10 x 26
 
+	#theta1 = np.random.uniform(-1, 1, (hidden_layer_size, input_layer_size + 1))	
+	#theta2 = np.random.uniform(-1, 1, (num_labels, hidden_layer_size + 1))
 
-	vectorTheta1 = theta1.flatten(1)
-	vectorTheta2 = theta2.flatten(1)
+	vectorTheta1 = theta1.flatten(1) # 19625 x 1
+	vectorTheta2 = theta2.flatten(1) # 260 x 1
 
-
-	nn_params = np.concatenate((vectorTheta1, vectorTheta2), axis=0)
+	nn_params = np.concatenate((vectorTheta1, vectorTheta2), axis=0) # 19885 x 1
 
 	(J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
 	print 'El valor de costo inicial regularizado es: ' + str(J)
 
+	#res1 = optimize.fmin_cg(nnFuncionCosto, )
 
 	print '\nEntrenando la Red Neuronal...'
-	#res1 = optimize.fmin_cg(nnFuncionCosto, )
+	pred = predecir(theta1, theta2, x_training) # 60000 x 1
+	
 	
