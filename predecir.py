@@ -15,5 +15,6 @@ def predecir(theta1, theta2, X):
 	temp2 = np.concatenate((unos, h1), axis=1)
 	h2 = expit(np.dot(temp2, theta2.transpose()))
 
-	p = np.argmax(h2, axis=1)
+	p = np.argmax(h2, axis=1) + 1
+
 	return p

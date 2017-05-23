@@ -2,16 +2,18 @@ import numpy as np
 from scipy.special import expit # funcion sigmoide ej: expit(9)
 from scipy.stats import logistic # funcion sigmoide gradiente ej: logistic.pdf(np.array([[2, 4, 6], [7, 8, 9]]))
 
+def minimizarCosto(x, *args):
+	input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP = args
+	(J, grad) = nnFuncionCosto(x, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
+	#print J
+	return J, grad
+
 def nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambdaP):
 	
-	theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1))) # 25 x 785
-	theta2 = np.reshape(nn_params[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1))) # 10 x 26
+	theta1 = np.reshape(nn_params[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1)), order='F') # 25 x 785
+	theta2 = np.reshape(nn_params[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1)), order='F') # 10 x 26
 
 	m = len(X)
-
-	J = 0
-	theta1_grad = np.zeros(X.shape) # 60000 x 784
-	theta2_grad = np.zeros(y.shape) # 60000 x 1
 
 	unos = np.ones((m, 1)) # 60000 x 1
 	a1 = np.concatenate((unos, X), axis=1) # 60000 x 785
@@ -21,10 +23,9 @@ def nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, X
 	a3 = expit(z2) # 60000 x 10
 	h = a3 # 60000 x 10
 
-	Y = np.zeros((num_labels, m)) # 10 x 60000
-	for i in range(num_labels):
-		Y[i,] = (y == i)
-	Y = Y.transpose() # 60000 x 10
+	Y = np.zeros((m, num_labels))
+	for i in xrange(m):
+		Y[i, y[i] - 1] = 1
 
 	parte1 = (1.0 / m)
 	parte2 = -Y * np.log(h) - (1.0 - Y) * np.log(1.0 - h) # 60000 x 10
@@ -36,11 +37,13 @@ def nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, X
 	theta2Reg = theta2[:,1:] # 10 x 25
 	theta1Reg = theta1Reg ** 2.0 # 25 x 784
 	theta2Reg = theta2Reg ** 2.0 # 10 x 25
-	sumTheta1 = theta1Reg.sum(axis=0).sum(axis=0)
-	sumTheta2 = theta2Reg.sum(axis=0).sum(axis=0)
+	sumTheta1 = theta1Reg.sum()
+	sumTheta2 = theta2Reg.sum()
+	suma = sumTheta1 + sumTheta2
+	reg = (lambdaP / (2.0 * m)) * (suma)
 
-	reg = (lambdaP / (2.0 * m)) * (sumTheta1 + sumTheta2)
 	J = J + reg
+
 
 	# Se realiza el backpropagation
 	d2 = h - Y # 60000 x 10
