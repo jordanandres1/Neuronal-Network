@@ -36,33 +36,11 @@ def printMatrix(matrix):
 		print
 	print
 
-def solicitarNeuronas():
-	top = Toplevel(root)
-	Label(top, text="Neuronas por capa", font="Helvetica 14 bold").grid(row=0, column=0)
-
-	for i in range(int(capas.get())):
-		Label(top, text="Capa " + str(i+1)).grid(row=(i+1), column=0)
-		c = Entry(top)
-		c.grid(row=(i+1), column=1)
-		listaCapas.append(c)
-
-	Button(top, text="Listo", command=imprimir).grid(column=1, sticky=E, pady=4)
-
-def imprimir():
-	global listaCapas
-
-	for c in listaCapas:
-		print c.get()
-
-	listaCapas = []
-
 if __name__ == '__main__':
 
 	'''
 	root = Tk()
 	root.title("Red neuronal")
-
-	listaCapas = []
 
 	Label(root, text="Proporciones", font="Helvetica 14 bold").grid(row=0, column=0)
 	Label(root, text="Validation").grid(row=1, column=0)
@@ -75,11 +53,14 @@ if __name__ == '__main__':
 
 	Label(root, text="Arquitectura", font="Helvetica 14 bold").grid(row=3, column=0)
 	Label(root, text="Capas ocultas").grid(row=4, column=0)
+	Label(root, text="Neuronas").grid(row=5, column=0)
 
 	capas = Entry(root)
 	capas.grid(row=4, column=1)
+	neuronas = Entry(root)
+	neuronas.grid(row=5, column=1)
 
-	Button(root, text="Listo", command=solicitarNeuronas).grid(row=5, column=1, sticky=E, pady=4)
+	Button(root, text="Listo", command=solicitarNeuronas).grid(row=6, column=1, sticky=E, pady=4)
 	
 	mainloop()
 	'''
@@ -128,6 +109,8 @@ if __name__ == '__main__':
 	extra = (input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
 	res = optimize.minimize(minimizarCosto, nn_params, extra, method='L-BFGS-B', jac=True, options={'maxiter': 25, 'disp': True})
 	res = res.x
+
+	#print res
 
 	theta1 = np.reshape(res[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1)), order='F')  # 25 x 785
 	theta2 = np.reshape(res[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1)), order='F')
