@@ -5,10 +5,20 @@
 		<link rel='stylesheet' type='text/css' href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
 	</head>
 
-	<body>
-
+	<style>
+	#header {
+	    text-align:center;
+        padding:10px;
+    }
+    </style>
+	<body background="resources/fondob.jpg">
+	    <div id="header">
+        <h1>
+            <font face="arial black" size="10" color=#0B173B>REDES</font>
+            <font face="arial black" size="10" color=#122A0A>NEURONALES</font>
+        </h1>
+        </div>
 		<div class="container">
-			<h1>Redes Neuronales</h1>
 			<?php
 			$servername = "localhost";
 			$username = "user";
@@ -29,9 +39,12 @@
 			    		<th>ID</th>
 			    		<th>Capas</th>
 			    		<th>Neuronas</th>
-			    		<th>Curva aprendizaje</th>
-			    		<th>Costo</th>
-			    		<th>Error</th>
+			    		<th>Lambda</th>
+			    		<th>Costo Inicial</th>
+			    		<th>% Precision Training</th>
+			    		<th>% Precision Test</th>
+			    		<th>% Error Training</th>
+			    		<th>% Error Test</th>
 			    		</tr>";
 			    // output data of each row
 			    while($row = $result->fetch_assoc()) {
@@ -39,9 +52,12 @@
 			        	<td>".$row["id"]."</td>
 			        	<td>".$row["capas"]."</td>
 			        	<td>".$row["neuronas"]."</td>
-			        	<td>".$row["curva_aprendizaje"]."</td>
-			        	<td>".$row["costo"]."</td>
-			        	<td>".$row["error"]."</td>
+			        	<td>".$row["lambda"]."</td>
+			        	<td>".$row["costo_inicial"]."</td>
+			        	<td>".$row["precision_training"]."</td>
+			        	<td>".$row["precision_test"]."</td>
+			        	<td>".$row["error_training"]."</td>
+			        	<td>".$row["error_test"]."</td>
 			        	</tr>";
 			    }
 			    echo "</table>";

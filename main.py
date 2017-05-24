@@ -5,129 +5,136 @@ import numpy as np
 import idx2numpy
 from nnFuncionCosto import nnFuncionCosto, minimizarCosto
 from randInitializeWeights import randInitializeWeights
-from displayData import displayData
+from conexionBD import insertarDatosBD
 from predecir import predecir
 import warnings
 from Tkinter import *
 
+
 # Este metodo carga las 60000 imagenes
 def leerTrainingSet():
-	x_training = idx2numpy.convert_from_file('datos/train-images-idx3-ubyte') # Las imagenes son 60000 cada una de 28x28
-	y_training = idx2numpy.convert_from_file('datos/train-labels-idx1-ubyte')
-	x_training = np.reshape(x_training, (60000, 784))
-	return (x_training, y_training)
+    x_training = idx2numpy.convert_from_file(
+        'datos/train-images-idx3-ubyte')  # Las imagenes son 60000 cada una de 28x28
+    y_training = idx2numpy.convert_from_file('datos/train-labels-idx1-ubyte')
+    x_training = np.reshape(x_training, (60000, 784))
+    return (x_training, y_training)
+
 
 def leerTestSet():
-	x = idx2numpy.convert_from_file('datos/t10k-images-idx3-ubyte') # Las imagenes son 60000 cada una de 28x28
-	y = idx2numpy.convert_from_file('datos/t10k-labels-idx1-ubyte')
-	x = np.reshape(x, (10000, 784))
-	x_cv = x[0:5000]
-	x_test = x[5000:]
-	y_cv = y[0:5000]
-	y_test = y[5000:]
-	return (x_cv, y_cv, x_test, y_test)
+    x = idx2numpy.convert_from_file('datos/t10k-images-idx3-ubyte')  # Las imagenes son 60000 cada una de 28x28
+    y = idx2numpy.convert_from_file('datos/t10k-labels-idx1-ubyte')
+    x = np.reshape(x, (10000, 784))
+    x_cv = x[0:5000]
+    x_test = x[5000:]
+    y_cv = y[0:5000]
+    y_test = y[5000:]
+    return (x_cv, y_cv, x_test, y_test)
+
 
 def printMatrix(matrix):
-	for i in range(len(matrix)):
-		for j in range(len(matrix[0])):
-			if matrix[i][j] == 0:
-				sys.stdout.write('.')
-			else:
-				sys.stdout.write('#')
-		print
-	print
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            if matrix[i][j] == 0:
+                sys.stdout.write('.')
+            else:
+                sys.stdout.write('#')
+        print
+    print
+
 
 def main():
-	warnings.filterwarnings("ignore")
+    warnings.filterwarnings("ignore")
 
-	print 'Cargando y visualizando datos...\n'
-	input_layer_size = 784
-	#input_layer_size = 400
-	hidden_layer_size = int(neuronas.get())
-	num_labels = 10
-	lambdaP = 0
-	#training = scipy.io.loadmat('data1.mat')
-	#x_training = training['X']
-	#y_training = training['y']
-	#y_training = np.squeeze(np.asarray(y_training))
-	(x_training, y_training) = leerTrainingSet()
-	(x_cv, y_cv, x_test, y_test) = leerTestSet()
+    print 'Cargando y visualizando datos...\n'
+    input_layer_size = 784
+    # input_layer_size = 400
+    hidden_layer_size = int(neuronas.get())
+    num_labels = 10
+    lambdaP = 0
+    # training = scipy.io.loadmat('data1.mat')
+    # x_training = training['X']
+    # y_training = training['y']
+    # y_training = np.squeeze(np.asarray(y_training))
+    (x_training, y_training) = leerTrainingSet()
+    (x_cv, y_cv, x_test, y_test) = leerTestSet()
 
-	print '\nFeedforward usando Redes Neuronales...'
-	theta1 = randInitializeWeights(hidden_layer_size, input_layer_size) # 25 x 785
-	theta2 = randInitializeWeights(num_labels, hidden_layer_size) # 10 x 26
+    print '\nFeedforward usando Redes Neuronales...'
+    theta1 = randInitializeWeights(hidden_layer_size, input_layer_size)  # 25 x 785
+    theta2 = randInitializeWeights(num_labels, hidden_layer_size)  # 10 x 26
 
-	'''
-	thetas = scipy.io.loadmat('pesos.mat')
-	theta1 = thetas['Theta1']
-	theta2 = thetas['Theta2']
-	theta1 = np.array(theta1)
-	theta2 = np.array(theta2)
-	'''
+    '''
+    thetas = scipy.io.loadmat('pesos.mat')
+    theta1 = thetas['Theta1']
+    theta2 = thetas['Theta2']
+    theta1 = np.array(theta1)
+    theta2 = np.array(theta2)
+    '''
 
-	vectorTheta1 = theta1.flatten(1) # 19625 x 1
-	vectorTheta2 = theta2.flatten(1) # 260 x 1
+    vectorTheta1 = theta1.flatten(1)  # 19625 x 1
+    vectorTheta2 = theta2.flatten(1)  # 260 x 1
 
-	nn_params = np.concatenate((vectorTheta1, vectorTheta2), axis=0) # 19885 x 1
+    nn_params = np.concatenate((vectorTheta1, vectorTheta2), axis=0)  # 19885 x 1
 
-	(J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
-	print 'El valor de costo inicial sin regularizar es: ' + str(J)
+    (J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training,
+                               lambdaP)
+    print 'El valor de costo inicial sin regularizar es: ' + str(J)
 
-	lambdaP = 1
-	(J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
-	print 'El valor de costo inicial regularizado es: ' + str(J)
+    lambdaP = float(lambdaA.get())
+    (J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training,
+                               lambdaP)
+    print 'El valor de costo inicial regularizado es: ' + str(J)
 
-	print '\nEntrenando la Red Neuronal...'
-	extra = (input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
-	res = optimize.minimize(minimizarCosto, nn_params, extra, method='L-BFGS-B', jac=True, options={'maxiter': 25, 'disp': True})
-	res = res.x
+    print '\nEntrenando la Red Neuronal...'
+    extra = (input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
+    res = optimize.minimize(minimizarCosto, nn_params, extra, method='L-BFGS-B', jac=True, options={'maxiter': 25, 'disp': True})
+    res = res.x
 
-	theta1 = np.reshape(res[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1)), order='F')  # 25 x 785
-	theta2 = np.reshape(res[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1)), order='F')
+    theta1 = np.reshape(res[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1)), order='F')  # 25 x 785
+    theta2 = np.reshape(res[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1)), order='F')
 
-	pred = predecir(theta1,theta2, x_training)
-	res_pred = np.mean(pred == y_training) * 100
-	print 'Precision de la Red Neuronal sobre el training set: ' + str(res_pred)
-	print 'Error con el training set: ' + str(100 - res_pred)
+    pred = predecir(theta1, theta2, x_training)
+    res_pred1 = np.mean(pred == y_training) * 100
+    error_pred1 = 100 - res_pred1
+    print 'Precision de la Red Neuronal sobre el training set: ' + str(res_pred1)
+    print 'Error con el training set: ' + str(error_pred1)
 
-	print
+    print
 
-	pred = predecir(theta1, theta2, x_test)
-	res_pred = np.mean(pred == y_test) * 100
-	print 'Precision de la Red Neuronal sobre el test set: ' + str(res_pred)
-	print 'Error con el test set: ' + str(100 - res_pred)
+    pred = predecir(theta1, theta2, x_test)
+    res_pred2 = np.mean(pred == y_test) * 100
+    error_pred2 = 100 - res_pred2
+    print 'Precision de la Red Neuronal sobre el test set: ' + str(res_pred2)
+    print 'Error con el test set: ' + str(error_pred2)
+
+    insertarDatosBD(1, hidden_layer_size, lambdaP, J, res_pred1, res_pred2, error_pred1, error_pred2)
+
 
 if __name__ == '__main__':
+    # Interfaz, las variables de aqui se pueden acceder desde cualquier funcion
+    root = Tk()
+    root.title("Red neuronal")
 
-	#Interfaz, las variables de aqui se pueden acceder desde cualquier funcion
-	root = Tk()
-	root.title("Red neuronal")
+    #Label(root, text="Proporciones", font="Helvetica 14 bold").grid(row=0, column=0)
+    #Label(root, text="Validation").grid(row=1, column=0)
+    #Label(root, text="Test").grid(row=2, column=0)
 
-	Label(root, text="Proporciones", font="Helvetica 14 bold").grid(row=0, column=0)
-	Label(root, text="Validation").grid(row=1, column=0)
-	Label(root, text="Test").grid(row=2, column=0)
+    #validation = Entry(root)
+    #test = Entry(root)
+    #validation.grid(row=1, column=1)
+    #test.grid(row=2, column=1)
 
-	validation = Entry(root)
-	test = Entry(root)
-	validation.grid(row=1, column=1)
-	test.grid(row=2, column=1)
+    Label(root, text="Arquitectura", font="Helvetica 14 bold").grid(row=3, column=0)
+    #Label(root, text="Capas ocultas").grid(row=4, column=0)
+    Label(root, text="Neuronas").grid(row=5, column=0)
+    Label(root, text="Lambda").grid(row=6, column=0)
 
-	Label(root, text="Arquitectura", font="Helvetica 14 bold").grid(row=3, column=0)
-	Label(root, text="Capas ocultas").grid(row=4, column=0)
-	Label(root, text="Neuronas").grid(row=5, column=0)
+    #capas = Entry(root)
+    neuronas = Entry(root)
+    lambdaA = Entry(root)
+    #capas.grid(row=4, column=1)
+    neuronas.grid(row=5, column=1)
+    lambdaA.grid(row=6, column=1)
 
-	capas = Entry(root)
-	neuronas = Entry(root)
-	capas.grid(row=4, column=1)
-	neuronas.grid(row=5, column=1)
+    Button(root, text="Listo", command=main).grid(row=7, column=1, sticky=E, pady=4)
 
-	Button(root, text="Listo", command=main).grid(row=6, column=1, sticky=E, pady=4)
-	
-	mainloop()
-	
-
-	
-
-
-
-
+    mainloop()

@@ -19,6 +19,10 @@
 -- Table structure for table `ejecucion`
 --
 
+CREATE DATABASE Neural_Network;
+
+USE Neural_Network;
+
 DROP TABLE IF EXISTS `ejecucion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -26,10 +30,13 @@ CREATE TABLE `ejecucion` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `capas` int(11) DEFAULT NULL,
   `neuronas` int(11) DEFAULT NULL,
-  `curva_aprendizaje` int(11) DEFAULT NULL,
-  `costo` float DEFAULT NULL,
-  `error` float DEFAULT NULL,
+  `lambda` float DEFAULT NULL,
+  `costo_inicial` float DEFAULT NULL,
+  `precision_training` float DEFAULT NULL,
+  `precision_test` float DEFAULT NULL,
+  `error_training` float DEFAULT NULL,
+  `error_test` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
