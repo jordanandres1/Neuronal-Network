@@ -5,6 +5,7 @@ import numpy as np
 import idx2numpy
 from nnFuncionCosto import nnFuncionCosto, minimizarCosto
 from randInitializeWeights import randInitializeWeights
+from displayData import displayData
 from predecir import predecir
 import warnings
 from Tkinter import *
@@ -36,11 +37,33 @@ def printMatrix(matrix):
 		print
 	print
 
+def solicitarNeuronas():
+	top = Toplevel(root)
+	Label(top, text="Neuronas por capa", font="Helvetica 14 bold").grid(row=0, column=0)
+
+	for i in range(int(capas.get())):
+		Label(top, text="Capa " + str(i+1)).grid(row=(i+1), column=0)
+		c = Entry(top)
+		c.grid(row=(i+1), column=1)
+		listaCapas.append(c)
+
+	Button(top, text="Listo", command=imprimir).grid(column=1, sticky=E, pady=4)
+
+def imprimir():
+	global listaCapas
+
+	for c in listaCapas:
+		print c.get()
+
+	listaCapas = []
+
 if __name__ == '__main__':
 
 	'''
 	root = Tk()
 	root.title("Red neuronal")
+
+	listaCapas = []
 
 	Label(root, text="Proporciones", font="Helvetica 14 bold").grid(row=0, column=0)
 	Label(root, text="Validation").grid(row=1, column=0)
@@ -53,14 +76,11 @@ if __name__ == '__main__':
 
 	Label(root, text="Arquitectura", font="Helvetica 14 bold").grid(row=3, column=0)
 	Label(root, text="Capas ocultas").grid(row=4, column=0)
-	Label(root, text="Neuronas").grid(row=5, column=0)
 
 	capas = Entry(root)
 	capas.grid(row=4, column=1)
-	neuronas = Entry(root)
-	neuronas.grid(row=5, column=1)
 
-	Button(root, text="Listo", command=solicitarNeuronas).grid(row=6, column=1, sticky=E, pady=4)
+	Button(root, text="Listo", command=solicitarNeuronas).grid(row=5, column=1, sticky=E, pady=4)
 	
 	mainloop()
 	'''
@@ -96,6 +116,7 @@ if __name__ == '__main__':
 
 	vectorTheta1 = theta1.flatten(1) # 19625 x 1
 	vectorTheta2 = theta2.flatten(1) # 260 x 1
+
 	nn_params = np.concatenate((vectorTheta1, vectorTheta2), axis=0) # 19885 x 1
 
 	(J, grad) = nnFuncionCosto(nn_params, input_layer_size, hidden_layer_size, num_labels, x_training, y_training, lambdaP)
@@ -110,17 +131,20 @@ if __name__ == '__main__':
 	res = optimize.minimize(minimizarCosto, nn_params, extra, method='L-BFGS-B', jac=True, options={'maxiter': 25, 'disp': True})
 	res = res.x
 
-	#print res
-
 	theta1 = np.reshape(res[:hidden_layer_size * (input_layer_size + 1)], (hidden_layer_size, (input_layer_size + 1)), order='F')  # 25 x 785
 	theta2 = np.reshape(res[((hidden_layer_size * (input_layer_size + 1))):], (num_labels, (hidden_layer_size + 1)), order='F')
 
 	pred = predecir(theta1,theta2, x_training)
-	print 'Precision de la Red Neuronal sobre el training set: ' +  str(np.mean(pred == y_training) * 100)
+	res_pred = np.mean(pred == y_training) * 100
+	print 'Precision de la Red Neuronal sobre el training set: ' + str(res_pred)
+	print 'Error con el training set: ' + str(100 - res_pred)
 
-	print '\nRealizando Test...'
+	print
 
-
+	pred = predecir(theta1, theta2, x_test)
+	res_pred = np.mean(pred == y_test) * 100
+	print 'Precision de la Red Neuronal sobre el test set: ' + str(res_pred)
+	print 'Error con el test set: ' + str(100 - res_pred)
 
 
 
